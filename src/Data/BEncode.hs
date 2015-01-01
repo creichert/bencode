@@ -1,31 +1,13 @@
-{-
-
- Copyright (c) 2005 Jesper Louis Andersen <jlouis@mongers.org>
-                    Lemmih <lemmih@gmail.com>
-
- Permission to use, copy, modify, and distribute this software for any
- purpose with or without fee is hereby granted, provided that the above
- copyright notice and this permission notice appear in all copies.
-
- THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
--}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  BEncode
--- Copyright   :  (c) Jesper Louis Andersen, 2005. (c) Lemmih, 2006
--- License     :  BSD-style
--- 
+-- Copyright   :  (c) 2005 Jesper Louis Andersen <jlouis@mongers.org>,
+--                    2006 Lemmih <lemmih@gmail.com>
+-- License     :  BSD3
 -- Maintainer  :  lemmih@gmail.com
 -- Stability   :  believed to be stable
 -- Portability :  portable
--- 
+--
 -- Provides a BEncode data type is well as functions for converting this
 -- data type to and from a String.
 --
@@ -34,7 +16,7 @@
 module Data.BEncode
   (
    -- * Data types
-   BEncode(..),  
+   BEncode(..),
    -- * Functions
    bRead,
    bShow,
@@ -137,7 +119,7 @@ bShow be = bShow' be
     sc = showChar
     ss = showString
     sKV (k,v) = sString k (length k) . bShow' v
-    sDict dict = foldr (.) id (map sKV (Map.toAscList dict)) 
+    sDict dict = foldr (.) id (map sKV (Map.toAscList dict))
     sList list = foldr (.) id (map bShow' list)
     sString str len = shows len . sc ':' . ss str
     bShow' b =

@@ -1,3 +1,13 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  BEncode.Lexer
+-- Copyright   :  (c) 2005 Jesper Louis Andersen <jlouis@mongers.org>,
+--                         Lemmih <lemmih@gmail.com>
+-- License     :  BSD3
+-- Maintainer  :  lemmih@gmail.com
+-- Stability   :  believed to be stable
+-- Portability :  portable
+-----------------------------------------------------------------------------
 module Data.BEncode.Lexer where
 
 import Data.Char
@@ -37,4 +47,3 @@ lexer fs
           | otherwise -> error "Lexer error."
     where ch = L.head fs
           rest = L.tail fs
-

@@ -1,30 +1,12 @@
-{-
-
- Copyright (c) 2005 Lemmih <lemmih@gmail.com>
-
- Permission to use, copy, modify, and distribute this software for any
- purpose with or without fee is hereby granted, provided that the above
- copyright notice and this permission notice appear in all copies.
-
- THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
--}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  BParser
--- Copyright   :  (c) Lemmih, 2005
--- License     :  BSD-style (see the file libraries/base/LICENSE)
--- 
+-- Copyright   :  (c) 2005, Lemmih <lemmih@gmail.com>
+-- License     :  BSD3
 -- Maintainer  :  lemmih@gmail.com
 -- Stability   :  stable
 -- Portability :  portable
--- 
+--
 -- A parsec style parser for BEncoded data
 -----------------------------------------------------------------------------
 module Data.BEncode.Parser
@@ -55,7 +37,7 @@ instance MonadPlus BParser where
     mplus (BParser a) (BParser b) = BParser $ \st -> case a st of
                                                        Error _err -> b st
                                                        ok         -> ok
-                                                       
+
 
 runB :: BParser a -> BEncode -> Reply a
 runB (BParser b) = b
@@ -126,4 +108,3 @@ bint p = do b <- p
 
 setInput :: BEncode -> BParser ()
 setInput b = BParser $ \_ -> Ok () b
-
