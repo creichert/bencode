@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  BParser
--- Copyright   :  (c) 2005, Lemmih <lemmih@gmail.com>
+-- Copyright   :  (c) 2005 Lemmih <lemmih@gmail.com>
 -- License     :  BSD3
 -- Maintainer  :  lemmih@gmail.com
 -- Stability   :  stable
