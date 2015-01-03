@@ -2,7 +2,7 @@
 -- |
 -- Module      :  BEncode.Lexer
 -- Copyright   :  (c) 2005 Jesper Louis Andersen <jlouis@mongers.org>
---                         Lemmih <lemmih@gmail.com>
+--                    2006 Lemmih <lemmih@gmail.com>
 -- License     :  BSD3
 -- Maintainer  :  lemmih@gmail.com
 -- Stability   :  believed to be stable
