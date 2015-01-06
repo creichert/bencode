@@ -24,10 +24,10 @@ module Data.BEncode.Parser
     ) where
 
 
-import Data.BEncode
-import qualified Data.Map as Map
+import           Control.Monad
+import           Data.BEncode
 import qualified Data.ByteString.Lazy.Char8 as L
-import Control.Monad
+import qualified Data.Map                   as Map
 
 data BParser a
     = BParser (BEncode -> Reply a)
