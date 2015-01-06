@@ -93,9 +93,9 @@ bList = withToken TList $ fmap BList (many bParse)
 
 bDict :: BParser BEncode
 bDict = withToken TDict $ fmap (BDict . Map.fromAscList) (checkList =<< many1 bAssocList)
-    where checkList lst = if (lst /= sort lst)
-                          then fail "dictionary not sorted"
-                          else return lst
+    where checkList lst = if lst /= sort lst
+                            then fail "dictionary not sorted"
+                            else return lst
           bAssocList
               = do str <- tstring
                    value <- bParse
@@ -114,13 +114,13 @@ bRead str = case parse bParse "" (lexer str) of
 
 -- | Render a BEncode structure to a B-coded string
 bShow :: BEncode -> ShowS
-bShow be = bShow' be
+bShow = bShow'
   where
     sc = showChar
     ss = showString
     sKV (k,v) = sString k (length k) . bShow' v
-    sDict dict = foldr (.) id (map sKV (Map.toAscList dict))
-    sList list = foldr (.) id (map bShow' list)
+    sDict dict = foldr ((.) . sKV) id (Map.toAscList dict)
+    sList = foldr ((.) . bShow') id
     sString str len = shows len . sc ':' . ss str
     bShow' b =
       case b of

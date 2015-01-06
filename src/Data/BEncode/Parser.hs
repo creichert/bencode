@@ -79,7 +79,7 @@ list :: String -> BParser a -> BParser [a]
 list name p
     = dict name >>= \lst ->
       BParser $ \b -> case lst of
-                      BList bs -> foldr cat (Ok [] b) (map (runB p) bs)
+                      BList bs -> foldr (cat . runB p) (Ok [] b) bs
                       _ -> Error $ "Not a list: " ++ name
     where cat (Ok v _) (Ok vs b) = Ok (v:vs) b
           cat (Ok _ _) (Error str) = Error str
