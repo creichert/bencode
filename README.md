@@ -1,6 +1,6 @@
 # bencode
 
-[![travis][travis-badge]][travis]
+[![travis][badge-travis]][travis]
 [![hackage][badge-hackage]][hackage]
 [![license][badge-license]][license]
 
