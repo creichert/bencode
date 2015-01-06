@@ -16,10 +16,6 @@ transmitting loosely structured data.
 - [Issue tracker][issues]
 
 
-# Credits
-
-- [Contributors](https://github.com/creichert/bencode/graphs/contributors)
-
 
 [badge-travis]: https://travis-ci.org/creichert/bencode.svg?branch=master
 [travis]: https://travis-ci.org/creichert/bencode
@@ -28,4 +24,3 @@ transmitting loosely structured data.
 [badge-license]: https://img.shields.io/badge/license-BSD3-green.svg?dummy
 [license]: https://github.com/creichert/bencode/blob/master/LICENSE
 [issues]: https://github.com/creichert/bencode/issues
-[Github]: https://github.com/creichert/bencode
