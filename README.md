@@ -21,6 +21,7 @@ transmitting loosely structured data.
 - [Contributors](https://github.com/creichert/bencode/graphs/contributors)
 
 
+[badge-travis]: https://travis-ci.org/creichert/bencode.svg?branch=master
 [travis]: https://travis-ci.org/creichert/bencode
 [badge-hackage]: https://img.shields.io/hackage/v/bencode.svg?dummy
 [hackage]: https://hackage.haskell.org/package/benchode
