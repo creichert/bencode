@@ -24,7 +24,7 @@ module Data.BEncode.Parser
     ) where
 
 
-import           Control.Applicative        hiding (optional, (<|>))
+import           Control.Applicative        hiding (optional)
 import           Control.Monad
 import           Data.BEncode
 import qualified Data.ByteString.Lazy.Char8 as L
@@ -32,6 +32,10 @@ import qualified Data.Map                   as Map
 
 data BParser a
     = BParser (BEncode -> Reply a)
+
+instance Alternative BParser where
+    empty = mzero
+    (<|>) a b = a `mplus` b
 
 instance MonadPlus BParser where
     mzero = BParser $ \_ -> Error "mzero"
@@ -62,9 +66,6 @@ instance Monad BParser where
 instance Functor BParser where
     fmap fn p = do a <- p
                    return (fn a)
-
-(<|>) :: BParser a -> BParser a -> BParser a
-a <|> b = a `mplus` b
 
 runParser :: BParser a -> BEncode -> Either String a
 runParser parser b = case runB parser b of
