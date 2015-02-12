@@ -24,6 +24,7 @@ module Data.BEncode.Parser
     ) where
 
 
+import           Control.Applicative        hiding (optional, (<|>))
 import           Control.Monad
 import           Data.BEncode
 import qualified Data.ByteString.Lazy.Char8 as L
@@ -45,6 +46,11 @@ runB (BParser b) = b
 data Reply a
     = Ok a BEncode
     | Error String
+
+
+instance Applicative BParser where
+  pure = return
+  (<*>) = ap
 
 instance Monad BParser where
     (BParser p) >>= f = BParser $ \b -> case p b of
