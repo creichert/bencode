@@ -41,10 +41,10 @@ type BParser a = GenParser Token () a
      data type here
 -}
 data BEncode = BInt Integer
-	     | BString L.ByteString
-	     | BList [BEncode]
+             | BString L.ByteString
+             | BList [BEncode]
              | BDict (Map String BEncode)
-	       deriving (Eq, Ord, Show)
+               deriving (Eq, Ord, Show)
 
 instance Binary BEncode where
     put e = put (BS.concat $ L.toChunks $ bPack e)
@@ -109,8 +109,8 @@ bParse = bDict <|> bList <|> bString <|> bInt
 -}
 bRead :: L.ByteString -> Maybe BEncode
 bRead str = case parse bParse "" (lexer str) of
-	     Left _err -> Nothing
-	     Right b   -> Just b
+              Left _err -> Nothing
+              Right b   -> Just b
 
 -- | Render a BEncode structure to a B-coded string
 bShow :: BEncode -> ShowS
