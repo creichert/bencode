@@ -9,7 +9,7 @@ License-File:    LICENSE
 License:         BSD3
 Build-Type:      Simple
 Category:        Text
-Tested-With:     GHC == 7.8.3, GHC == 7.6.3
+Tested-With:     GHC == 7.10.1, GHC == 7.8.4, GHC == 7.8.3, GHC == 7.6.3
 Cabal-Version:   >= 1.10
 Synopsis:        Parser and printer for bencoded data.
 Description:
@@ -38,36 +38,3 @@ Library
                     , bytestring
                     , containers
                     , binary
-
-
-Test-Suite doctest
-  Type:             exitcode-stdio-1.0
-  Main-is:          DocTest.hs
-  Hs-Source-Dirs:   tests
-  Ghc-Options:      -Wall
-  Default-Language: Haskell2010
-  Build-Depends:    base
-                  , doctest == 0.9.*
-                  , Glob    == 0.7.*
-
-
-Test-Suite haddock
-  Type:             exitcode-stdio-1.0
-  Main-Is:          Haddock.hs
-  Hs-Source-Dirs:   tests
-  Ghc-Options:      -Wall
-  Default-Language: Haskell2010
-  Build-Depends:    base
-                  , process
-                  , regex-compat
-
-
-Test-Suite hlint
-    Type:             exitcode-stdio-1.0
-    Main-Is:          HLint.hs
-    Ghc-Options:      -Wall
-    Hs-Source-Dirs:   tests
-    Default-Language: Haskell2010
-    Build-Depends:    base
-                    , hlint == 1.8.*
-                    , directory
