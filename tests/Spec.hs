@@ -23,6 +23,11 @@ main = hspec $ do
     it "encodes lists" $ do
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
           `shouldBe` Just (BList [ BString "hello", BInt 42, bll ])
+    it "encodes nested lists" $ do
+        bRead "ll5:helloi62eel3:fooee"
+          `shouldBe` Just (BList
+            [ BList [ BString "hello", BInt 62 ],
+              BList [ BString "foo" ] ])
 
   describe "Data.BEncode decoding" $ do
     it "decodes int" $ do
