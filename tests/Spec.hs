@@ -1,7 +1,6 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map as Map
 
 import Test.Hspec
@@ -16,11 +15,11 @@ main = hspec $ do
 
   describe "Data.BEncode encoding" $ do
     it "encodes" $ do
-        bRead (L.pack "i42e") `shouldBe` Just (BInt 42)
+        bRead "i42e" `shouldBe` Just (BInt 42)
     it "encodes" $ do
-        bRead (L.pack "3:foo") `shouldBe` Just (BString (L.pack "foo"))
+        bRead "3:foo" `shouldBe` Just (BString "foo")
     it "encodes" $ do
-        bRead (L.pack "5:café") `shouldBe` Just (BString (L.pack "café"))
+        bRead "5:café" `shouldBe` Just (BString "café")
     it "encodes" $ do
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
           `shouldBe` Just (BList [ BString "hello", BInt 42, bll ])
