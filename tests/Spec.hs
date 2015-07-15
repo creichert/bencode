@@ -14,16 +14,15 @@ main = hspec $ do
   let bll = BList [BInt (-1), BInt 0, BInt 1, BInt 2, BInt 3, BString "four"]
 
   describe "Data.BEncode encoding" $ do
-    it "encodes" $ do
+    it "encodes integers" $ do
         bRead "i42e" `shouldBe` Just (BInt 42)
-    it "encodes" $ do
+    it "encodes strings" $ do
         bRead "3:foo" `shouldBe` Just (BString "foo")
-    it "encodes" $ do
+    it "encodes strings with special characters in Haskell source" $ do
         bRead "5:café" `shouldBe` Just (BString "café")
-    it "encodes" $ do
+    it "encodes lists" $ do
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
           `shouldBe` Just (BList [ BString "hello", BInt 42, bll ])
-
 
   describe "Data.BEncode decoding" $ do
     it "decodes int" $ do
