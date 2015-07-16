@@ -54,7 +54,7 @@ main = hspec $ do
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
             `shouldBe` Just (BList [ BString "hello", BInt 42, bll])
 
-  describe "Data.BEncode.Parser parsing" $ do
+  describe "Data.BEncode.Parser" $ do
     it "parses BInts" $ do
         runParser (bint token) (BInt 42) `shouldBe` Right 42
     it "parses BStrings" $ do
