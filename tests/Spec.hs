@@ -79,3 +79,20 @@ main = hspec $ do
         runParser (list $ list $ bbytestring token)
                   (BList [BList [BString "foo", BString "bar"], BList []])
         `shouldBe` Right [["foo", "bar"], []]
+    it "parses BDicts" $
+        runParser (bint $ dict "foo")
+                  (BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)])
+        `shouldBe` Right 1
+    it "parses BLists of BDicts" $
+        runParser (list $ dict "foo")
+                  (BList [
+                    BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)],
+                    BDict $ Map.singleton "foo" (BString "bam")
+                  ])
+        `shouldBe` Right [BInt 1, BString "bam"]
+    it "parses BDicts of BLists" $
+        runParser (dict "foo" >>= setInput >> list (bstring token))
+                  (BDict $ Map.singleton "foo" (BList [
+                    BString "foo", BString "bar"
+                  ]))
+        `shouldBe` Right ["foo", "bar"]
