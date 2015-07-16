@@ -4,7 +4,7 @@ import qualified Data.Map as Map
 
 import Test.Hspec
 import Data.BEncode
-
+import Data.BEncode.Parser
 
 main :: IO ()
 main = hspec $ do
@@ -44,8 +44,8 @@ main = hspec $ do
         bPack (BList [ BList [BInt 1], BInt 1, BInt 2, BInt 3])
           `shouldBe` "lli1eei1ei2ei3ee"
     it "decodes hash" $ do
-        let dict = Map.fromList [("foo", BString "bar"), ("baz",BString "qux")]
-        bPack (BDict dict) `shouldBe` "d3:baz3:qux3:foo3:bare"
+        let d = Map.fromList [("foo", BString "bar"), ("baz",BString "qux")]
+        bPack (BDict d) `shouldBe` "d3:baz3:qux3:foo3:bare"
     -- FIX
     -- it "decodes unicode" $ do
     --   bPack (BString "café") `shouldBe` "5:café"
@@ -53,3 +53,12 @@ main = hspec $ do
     it "decodes lists of lists" $ do
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
             `shouldBe` Just (BList [ BString "hello", BInt 42, bll])
+
+  describe "Data.BEncode.Parser parsing" $ do
+    it "parses BInts" $ do
+        runParser (bint token) (BInt 42) `shouldBe` Right 42
+    it "parses BStrings" $ do
+        runParser (bstring token) (BString "foo") `shouldBe` Right "foo"
+    it "parses BStrings with special characters in Haskell source" $ do
+        runParser (bbytestring token) (BString "café") `shouldBe` Right "café"
+    -- it "encodes lists" $ undefined
