@@ -60,4 +60,22 @@ main = hspec $ do
         runParser (bstring token) (BString "foo") `shouldBe` Right "foo"
     it "parses BStrings with special characters in Haskell source" $
         runParser (bbytestring token) (BString "café") `shouldBe` Right "café"
-    -- it "encodes lists" $ undefined
+    it "parses empty BLists" $
+        runParser (list token) (BList []) `shouldBe` Right []
+    it "parses BLists of BInts and BStrings" $
+        runParser (list token) (BList [BInt 1, BString "foo"])
+        `shouldBe` Right [BInt 1, BString "foo"]
+    it "parses BLists of Integers" $
+        runParser (list $ bint token) (BList [BInt 1, BInt 2])
+        `shouldBe` Right [1, 2]
+    it "parses BLists of Strings" $
+        runParser (list $ bstring token) (BList [BString "foo", BString "bar"])
+        `shouldBe` Right ["foo", "bar"]
+    it "parses BLists of Strings into ByteStrings" $
+        runParser (list $ bbytestring token) 
+                  (BList [BString "foo", BString "bar"])
+        `shouldBe` Right ["foo", "bar"]
+    it "parses nested BLists" $
+        runParser (list $ list $ bbytestring token)
+                  (BList [BList [BString "foo", BString "bar"], BList []])
+        `shouldBe` Right [["foo", "bar"], []]
