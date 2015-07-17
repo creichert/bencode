@@ -82,12 +82,11 @@ dict name = BParser $ \b -> case b of
                               BDict _ -> Error $ "Name not found in dictionary: " ++ name
                               _ -> Error $ "Not a dictionary: " ++ name
 
-list :: String -> BParser a -> BParser [a]
-list name p
-    = dict name >>= \lst ->
-      BParser $ \b -> case lst of
-                      BList bs -> foldr (cat . runB p) (Ok [] b) bs
-                      _ -> Error $ "Not a list: " ++ name
+list :: BParser a -> BParser [a]
+list p
+    = BParser $ \lst -> case lst of
+          BList (bs) -> foldr (cat . runB p) (Ok [] (BList [])) bs
+          _ -> Error $ "Not a list: " ++ (show lst)
     where cat (Ok v _) (Ok vs b) = Ok (v:vs) b
           cat (Ok _ _) (Error str) = Error str
           cat (Error str) _ = Error str
