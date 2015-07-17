@@ -49,4 +49,5 @@ test-suite spec
                 , bytestring
                 , containers
                 , hspec
+                , QuickCheck
                 , bencode

@@ -3,8 +3,19 @@
 import qualified Data.Map as Map
 
 import Test.Hspec
+import Test.QuickCheck
+
 import Data.BEncode
 import Data.BEncode.Parser
+import Data.ByteString.Lazy (pack)
+
+instance Arbitrary BEncode where
+    arbitrary = oneof [
+            BInt `fmap` arbitrary,
+            (BString . pack) `fmap` arbitrary,
+            BList `fmap` arbitrary,
+            (BDict . Map.fromList) `fmap` arbitrary
+        ]
 
 main :: IO ()
 main = hspec $ do
@@ -52,6 +63,8 @@ main = hspec $ do
     it "decodes lists of lists" $
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
             `shouldBe` Just (BList [ BString "hello", BInt 42, bll])
+    it "is inverse to to encoding" $ property $
+        \bencode -> (bRead . bPack) bencode == Just (bencode :: BEncode)
 
   describe "Data.BEncode.Parser" $ do
     it "parses BInts" $
