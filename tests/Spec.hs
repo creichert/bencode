@@ -37,6 +37,13 @@ main = hspec $ do
           `shouldBe` Just (BList
             [ BList [ BString "hello", BInt 62 ],
               BList [ BString "foo" ] ])
+    it "encodes dictionaries" $
+        bRead "d3:baz3:moo3:foo3:bare"
+            `shouldBe` Just
+                (BDict (Map.fromList
+                    [("baz",BString "moo"),("foo",BString "bar")]))
+    it "encodes empty dictionaries" $
+        bRead "de" `shouldBe` Just (BDict Map.empty)
 
   describe "Data.BEncode decoding" $ do
     it "decodes int" $
