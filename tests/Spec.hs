@@ -96,3 +96,20 @@ main = hspec $ do
                     BString "foo", BString "bar"
                   ]))
         `shouldBe` Right ["foo", "bar"]
+    it "parses optional BInts" $ do
+        runParser (optional $ bint token) (BInt 1) 
+            `shouldBe` Right (Just 1)
+        runParser (optional $ bint token) (BString "foo")
+            `shouldBe` Right Nothing
+    it "parses optional BStrings" $ do
+        runParser (optional $ bstring token) (BInt 1) 
+            `shouldBe` Right Nothing
+        runParser (optional $ bstring token) (BString "foo")
+            `shouldBe` Right (Just "foo")
+    it "parses optional BDict keys" $ do
+        runParser (optional $ bint $ dict "foo")
+                  (BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)])
+            `shouldBe` Right (Just 1)
+        runParser (optional $ bint $ dict "foo")
+                  (BDict $ Map.fromList [("bar", BInt 2)])
+            `shouldBe` Right Nothing
