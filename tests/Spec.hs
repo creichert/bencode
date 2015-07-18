@@ -9,13 +9,16 @@ import Data.BEncode
 import Data.BEncode.Parser
 import Data.ByteString.Lazy (pack)
 
-instance Arbitrary BEncode where
-    arbitrary = oneof [
-            BInt `fmap` arbitrary,
-            (BString . pack) `fmap` arbitrary,
-            BList `fmap` arbitrary,
-            (BDict . Map.fromList) `fmap` arbitrary
-        ]
+instance Arbitrary BEncode where arbitrary = sized bencode'
+
+bencode' :: Int -> Gen BEncode
+bencode' 0 = oneof [BInt `fmap` arbitrary, (BString . pack) `fmap` arbitrary]
+bencode' n = oneof [
+        BInt `fmap` arbitrary,
+        (BString . pack) `fmap` arbitrary :: Gen BEncode,
+        BList `fmap` (resize (n `div` 2) arbitrary),
+        (BDict . Map.fromList) `fmap` (resize (n `div` 2) arbitrary)
+    ]
 
 main :: IO ()
 main = hspec $ do
@@ -46,6 +49,8 @@ main = hspec $ do
         bRead "de" `shouldBe` Just (BDict Map.empty)
 
   describe "Data.BEncode decoding" $ do
+    it "is the inverse of encoding" $ property $ \bencode ->
+        (bRead . bPack) bencode == Just bencode
     it "decodes int" $
         bPack (BInt 42) `shouldBe` "i42e"
     it "decodes null int" $
@@ -70,8 +75,6 @@ main = hspec $ do
     it "decodes lists of lists" $
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
             `shouldBe` Just (BList [ BString "hello", BInt 42, bll])
-    it "is inverse to to encoding" $ property $
-        \bencode -> (bRead . bPack) bencode == Just (bencode :: BEncode)
 
   describe "Data.BEncode.Parser" $ do
     it "parses BInts" $
