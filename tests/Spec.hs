@@ -3,8 +3,22 @@
 import qualified Data.Map as Map
 
 import Test.Hspec
+import Test.QuickCheck
+
 import Data.BEncode
 import Data.BEncode.Parser
+import Data.ByteString.Lazy (pack)
+
+instance Arbitrary BEncode where arbitrary = sized bencode'
+
+bencode' :: Int -> Gen BEncode
+bencode' 0 = oneof [BInt `fmap` arbitrary, (BString . pack) `fmap` arbitrary]
+bencode' n = oneof [
+        BInt `fmap` arbitrary,
+        (BString . pack) `fmap` arbitrary :: Gen BEncode,
+        BList `fmap` (resize (n `div` 2) arbitrary),
+        (BDict . Map.fromList) `fmap` (resize (n `div` 2) arbitrary)
+    ]
 
 main :: IO ()
 main = hspec $ do
@@ -26,8 +40,17 @@ main = hspec $ do
           `shouldBe` Just (BList
             [ BList [ BString "hello", BInt 62 ],
               BList [ BString "foo" ] ])
+    it "encodes dictionaries" $
+        bRead "d3:baz3:moo3:foo3:bare"
+            `shouldBe` Just
+                (BDict (Map.fromList
+                    [("baz",BString "moo"),("foo",BString "bar")]))
+    it "encodes empty dictionaries" $
+        bRead "de" `shouldBe` Just (BDict Map.empty)
 
   describe "Data.BEncode decoding" $ do
+    it "is the inverse of encoding" $ property $ \bencode ->
+        (bRead . bPack) bencode == Just bencode
     it "decodes int" $
         bPack (BInt 42) `shouldBe` "i42e"
     it "decodes null int" $
