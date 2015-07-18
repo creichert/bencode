@@ -92,7 +92,8 @@ bList :: BParser BEncode
 bList = withToken TList $ fmap BList (many bParse)
 
 bDict :: BParser BEncode
-bDict = withToken TDict $ fmap (BDict . Map.fromAscList) (checkList =<< many1 bAssocList)
+bDict = withToken TDict $
+    fmap (BDict . Map.fromAscList) (checkList =<< many bAssocList)
     where checkList lst = if lst /= sort lst
                             then fail "dictionary not sorted"
                             else return lst
