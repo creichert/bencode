@@ -56,12 +56,11 @@ instance Monad BParser where
         case p b of
             Right a -> runParser (f a) b
             Left str -> Left str
-    return = BParser . const . Right
-    fail = BParser . const . Left
+    return = BParser . const . return
+    fail = BParser . const . fail
 
 instance Functor BParser where
-    fmap fn p = do a <- p
-                   return (fn a)
+    fmap fn p = p >>= return . fn
 
 dict :: String -> BParser a -> BParser a
 dict name p = BParser $ \b -> case b of
