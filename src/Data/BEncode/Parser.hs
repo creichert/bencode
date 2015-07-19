@@ -60,7 +60,7 @@ instance Monad BParser where
     fail = BParser . const . fail
 
 instance Functor BParser where
-    fmap fn p = p >>= return . fn
+    fmap fn p = return . fn =<< p
 
 dict :: String -> BParser a -> BParser a
 dict name p = BParser $ \b -> case b of
