@@ -29,7 +29,7 @@ import           Data.Either (rights)
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
 
-newtype BParser a = BParser (BEncode -> Reply a)
+newtype BParser a = BParser (BEncode -> Either String a)
 
 instance Alternative BParser where
     empty = mzero
@@ -42,9 +42,7 @@ instance MonadPlus BParser where
             Left _err -> b st
             ok         -> ok
 
-type Reply = Either String
-
-runParser :: BParser a -> BEncode -> Reply a
+runParser :: BParser a -> BEncode -> Either String a
 runParser (BParser b) = b
 
 instance Applicative BParser where
