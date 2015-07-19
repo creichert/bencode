@@ -56,8 +56,8 @@ instance Monad BParser where
         case p b of
             Right a -> runParser (f a) b
             Left str -> Left str
-    return result = BParser . const $ Right result
-    fail str = BParser . const $ Left str
+    return = BParser . const . Right
+    fail = BParser . const . Left
 
 instance Functor BParser where
     fmap fn p = do a <- p
