@@ -52,29 +52,26 @@ instance Applicative BParser where
   (<*>) = ap
 
 instance Monad BParser where
-    (BParser p) >>= f = BParser $ \b ->
-        case p b of
-            Right a -> runParser (f a) b
-            Left str -> Left str
+    BParser p >>= f = BParser $ \b -> p b >>= \res -> runParser (f res) b
     return = BParser . const . return
     fail = BParser . const . fail
 
 instance Functor BParser where
-    fmap fn p = return . fn =<< p
+    fmap f p = return . f =<< p
+
 
 dict :: String -> BParser a -> BParser a
-dict name p = BParser $ \b -> case b of
-    BDict bmap | Just code <- Map.lookup name bmap
-       -> runParser p code
+dict name (BParser p) = BParser $ \b -> case b of
+    BDict bmap | (Just code) <- Map.lookup name bmap -> p code
     BDict _ -> Left $ "Name not found in dictionary: " ++ name
     _ -> Left $ "Not a dictionary: " ++ show b
 
 list :: BParser a -> BParser [a]
-list p
+list (BParser p)
     = BParser $ \b -> case b of
         -- note that if the inner parser fails on a member of the list
         -- we still yield the members that successfully parsed
-        BList bs -> return . rights $ map (runParser p) bs
+        BList bs -> return . rights $ map p bs
         _ -> Left $ "Not a list: " ++ show b
 
 optional :: BParser a -> BParser (Maybe a)
