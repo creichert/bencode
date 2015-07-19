@@ -65,10 +65,10 @@ dict name (BParser p) = BParser $ \b -> case b of
     _ -> Left $ "Not a dictionary: " ++ show b
 
 list :: BParser a -> BParser [a]
+-- note that if the inner parser fails on a member of the list
+-- we still yield the members that successfully parsed
 list (BParser p)
     = BParser $ \b -> case b of
-        -- note that if the inner parser fails on a member of the list
-        -- we still yield the members that successfully parsed
         BList bs -> return . rights $ map p bs
         _ -> Left $ "Not a list: " ++ show b
 
