@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-} -- orphan Arbitrary instance is fine
 
 import qualified Data.Map as Map
 
