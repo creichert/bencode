@@ -7,7 +7,7 @@
 -- Stability   :  stable
 -- Portability :  portable
 --
--- A parsec style parser for BEncoded data
+-- Parser combinators for BEncoded data
 -----------------------------------------------------------------------------
 module Data.BEncode.Parser
     ( BParser
