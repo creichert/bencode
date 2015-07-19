@@ -52,7 +52,7 @@ instance Applicative BParser where
 instance Monad BParser where
     BParser p >>= f = BParser $ \b -> p b >>= \res -> runParser (f res) b
     return = BParser . const . return
-    fail = BParser . const . fail
+    fail = BParser . const . Left
 
 instance Functor BParser where
     fmap f p = return . f =<< p
@@ -78,14 +78,14 @@ optional p = liftM Just p <|> return Nothing
 bstring :: BParser String
 bstring = BParser $ \b -> case b of
     BString str -> return $ L.unpack str
-    _ -> fail $ "Expected BString, found: " ++ show b
+    _ -> Left $ "Expected BString, found: " ++ show b
 
 bbytestring :: BParser L.ByteString
 bbytestring = BParser $ \b -> case b of
     BString str -> return str
-    _ -> fail $ "Expected BString, found: " ++ show b
+    _ -> Left $ "Expected BString, found: " ++ show b
 
 bint :: BParser Integer
 bint = BParser $ \b -> case b of
     BInt int -> return int
-    _ -> fail $ "Expected BInt, found: " ++ show b
+    _ -> Left $ "Expected BInt, found: " ++ show b
