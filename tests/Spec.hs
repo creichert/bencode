@@ -133,3 +133,11 @@ main = hspec $ do
         runParser (optional $ dict "foo" bint)
                   (BDict $ Map.fromList [("bar", BInt 2)])
             `shouldBe` Right Nothing
+    it "parses monadically" $ do
+        parse (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
+            `shouldBe` Right ("bar", 1)
+          where 
+        parse = runParser $ do
+            foo <- dict "foo" bstring
+            baz <- dict "baz" bint
+            return (foo, baz)
