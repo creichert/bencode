@@ -30,8 +30,7 @@ import           Data.BEncode
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
 
-data BParser a
-    = BParser (BEncode -> Reply a)
+newtype BParser a = BParser (BEncode -> Reply a)
 
 instance Alternative BParser where
     empty = mzero
