@@ -10,82 +10,60 @@
 -- Parser combinators for BEncoded data
 -----------------------------------------------------------------------------
 module Data.BEncode.Parser
-    ( BParser
-    , runParser
+    ( BReader
+    , runReader
     , dict
     , list
+    {-
     , optional
+    , (<|>)
+    -}
     , bstring
     , bbytestring
     , bint
-    , (<|>)
     ) where
 
 
 import           Control.Applicative        hiding (optional)
 import           Control.Monad
+import           Control.Monad.Trans.Reader (Reader, reader, runReader)
 import           Data.BEncode
 import           Data.Either (rights)
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
 
-newtype BParser a = BParser (BEncode -> Either String a)
+--newtype BParser a = BParser (BEncode -> Either String a)
+type BReader a = Reader BEncode (Either String a)
 
-instance Alternative BParser where
-    empty = mzero
-    (<|>) a b = a `mplus` b
-
-instance MonadPlus BParser where
-    mzero = fail "mzero"
-    mplus (BParser a) (BParser b) = BParser $ \st ->
-        case a st of
-            Left _err -> b st
-            ok         -> ok
-
-runParser :: BParser a -> BEncode -> Either String a
-runParser (BParser b) = b
-
-instance Applicative BParser where
-  pure = return
-  (<*>) = ap
-
-instance Monad BParser where
-    BParser p >>= f = BParser $ \b -> p b >>= \res -> runParser (f res) b
-    return = BParser . const . return
-    fail = BParser . const . Left
-
-instance Functor BParser where
-    fmap f p = return . f =<< p
-
-
-dict :: String -> BParser a -> BParser a
-dict name (BParser p) = BParser $ \b -> case b of
-    BDict bmap | (Just code) <- Map.lookup name bmap -> p code
+dict :: String -> BReader a -> BReader a
+dict name br = reader $ \b -> case b of
+    BDict bmap | (Just code) <- Map.lookup name bmap -> runReader br code
     BDict _ -> Left $ "Name not found in dictionary: " ++ name
     _ -> Left $ "Not a dictionary: " ++ show b
 
-list :: BParser a -> BParser [a]
+list :: BReader a -> BReader [a]
 -- note that if the inner parser fails on a member of the list
 -- we still yield the members that successfully parsed
-list (BParser p)
-    = BParser $ \b -> case b of
-        BList bs -> return . rights $ map p bs
-        _ -> Left $ "Not a list: " ++ show b
+list br = reader $ \b -> case b of
+    BList bs -> return . rights $ map (runReader br) bs
+    _ -> Left $ "Not a list: " ++ show b
 
-optional :: BParser a -> BParser (Maybe a)
-optional p = liftM Just p <|> return Nothing
+{-
+optional :: BReader a -> BReader (Maybe a)
+optional br = (fmap Just) br <|> return Nothing
+-}
 
-bstring :: BParser String
-bstring = BParser $ \b -> case b of
+bstring :: BReader String
+bstring = reader $ \b -> case b of
     BString str -> return $ L.unpack str
     _ -> Left $ "Expected BString, found: " ++ show b
 
-bbytestring :: BParser L.ByteString
-bbytestring = BParser $ \b -> case b of
+bbytestring :: BReader L.ByteString
+bbytestring = reader $ \b -> case b of
     BString str -> return str
     _ -> Left $ "Expected BString, found: " ++ show b
 
-bint :: BParser Integer
-bint = BParser $ \b -> case b of
+bint :: BReader Integer
+bint = reader $ \b -> case b of
     BInt int -> return int
     _ -> Left $ "Expected BInt, found: " ++ show b

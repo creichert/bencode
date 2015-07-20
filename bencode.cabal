@@ -38,6 +38,7 @@ Library
                     , bytestring
                     , containers
                     , binary
+                    , transformers
 
 test-suite spec
   ghc-options:    -Wall
