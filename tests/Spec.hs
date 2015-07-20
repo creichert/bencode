@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-} -- orphan Arbitrary instance is fine
 
 import qualified Data.Map as Map
 
@@ -78,61 +79,66 @@ main = hspec $ do
 
   describe "Data.BEncode.Parser" $ do
     it "parses BInts" $
-        runParser (bint token) (BInt 42) `shouldBe` Right 42
+        runParser bint (BInt 42) `shouldBe` Right 42
     it "parses BStrings" $
-        runParser (bstring token) (BString "foo") `shouldBe` Right "foo"
+        runParser bstring (BString "foo") `shouldBe` Right "foo"
     it "parses BStrings with special characters in Haskell source" $
-        runParser (bbytestring token) (BString "café") `shouldBe` Right "café"
+        runParser bbytestring (BString "café") `shouldBe` Right "café"
     it "parses empty BLists" $
-        runParser (list token) (BList []) `shouldBe` Right []
-    it "parses BLists of BInts and BStrings" $
-        runParser (list token) (BList [BInt 1, BString "foo"])
-        `shouldBe` Right [BInt 1, BString "foo"]
-    it "parses BLists of Integers" $
-        runParser (list $ bint token) (BList [BInt 1, BInt 2])
+        runParser (list bint) (BList []) `shouldBe` Right []
+    it "parses BLists of BInts" $
+        runParser (list bint) (BList [BInt 1, BInt 2])
         `shouldBe` Right [1, 2]
-    it "parses BLists of Strings" $
-        runParser (list $ bstring token) (BList [BString "foo", BString "bar"])
+    it "parses BLists of BStrings" $
+        runParser (list bstring) (BList [BString "foo", BString "bar"])
         `shouldBe` Right ["foo", "bar"]
-    it "parses BLists of Strings into ByteStrings" $
-        runParser (list $ bbytestring token) 
+    it "parses BLists of BStrings into ByteStrings" $
+        runParser (list bbytestring) 
                   (BList [BString "foo", BString "bar"])
         `shouldBe` Right ["foo", "bar"]
     it "parses nested BLists" $
-        runParser (list $ list $ bbytestring token)
+        runParser (list $ list bbytestring)
                   (BList [BList [BString "foo", BString "bar"], BList []])
         `shouldBe` Right [["foo", "bar"], []]
     it "parses BDicts" $
-        runParser (bint $ dict "foo")
+        runParser (dict "foo" bint)
                   (BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)])
         `shouldBe` Right 1
     it "parses BLists of BDicts" $
-        runParser (list $ dict "foo")
+        runParser (list $ dict "foo" bstring)
                   (BList [
-                    BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)],
+                    BDict $ Map.fromList [("foo", BString "bar"),
+                                          ("baz", BInt 2)],
                     BDict $ Map.singleton "foo" (BString "bam")
                   ])
-        `shouldBe` Right [BInt 1, BString "bam"]
+        `shouldBe` Right ["bar", "bam"]
     it "parses BDicts of BLists" $
-        runParser (dict "foo" >>= setInput >> list (bstring token))
+        runParser (dict "foo" $ list $ bstring)
                   (BDict $ Map.singleton "foo" (BList [
                     BString "foo", BString "bar"
                   ]))
         `shouldBe` Right ["foo", "bar"]
     it "parses optional BInts" $ do
-        runParser (optional $ bint token) (BInt 1) 
+        runParser (optional bint) (BInt 1) 
             `shouldBe` Right (Just 1)
-        runParser (optional $ bint token) (BString "foo")
+        runParser (optional bint) (BString "foo")
             `shouldBe` Right Nothing
     it "parses optional BStrings" $ do
-        runParser (optional $ bstring token) (BInt 1) 
-            `shouldBe` Right Nothing
-        runParser (optional $ bstring token) (BString "foo")
+        runParser (optional bstring) (BInt 1) `shouldBe` Right Nothing
+        runParser (optional bstring) (BString "foo")
             `shouldBe` Right (Just "foo")
     it "parses optional BDict keys" $ do
-        runParser (optional $ bint $ dict "foo")
+        runParser (optional $ dict "foo" bint)
                   (BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)])
             `shouldBe` Right (Just 1)
-        runParser (optional $ bint $ dict "foo")
+        runParser (optional $ dict "foo" bint)
                   (BDict $ Map.fromList [("bar", BInt 2)])
             `shouldBe` Right Nothing
+    it "parses monadically" $ do
+        parse (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
+            `shouldBe` Right ("bar", 1)
+          where 
+        parse = runParser $ do
+            foo <- dict "foo" bstring
+            baz <- dict "baz" bint
+            return (foo, baz)

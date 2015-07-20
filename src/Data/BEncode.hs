@@ -53,7 +53,7 @@ instance Binary BEncode where
                Just e  -> return e
                Nothing -> fail "Failed to parse BEncoded data"
 
--- Source possition is pretty useless in BEncoded data. FIXME
+-- Source position is pretty useless in BEncoded data. FIXME
 updatePos :: (SourcePos -> Token -> [Token] -> SourcePos)
 updatePos pos _ _ = pos
 
