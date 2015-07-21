@@ -25,11 +25,11 @@ module Data.BEncode.Parser
 import           Control.Applicative        hiding (optional)
 import           Control.Monad
 import           Data.BEncode
-import           Data.Either (rights)
+import           Data.Traversable           (sequenceA)
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
 
-newtype BParser a = BParser (BEncode -> Either String a)
+newtype BParser a = BParser {runParser :: (BEncode -> Either String a)}
 
 instance Alternative BParser where
     empty = mzero
@@ -41,9 +41,6 @@ instance MonadPlus BParser where
         case a st of
             Left _err -> b st
             ok         -> ok
-
-runParser :: BParser a -> BEncode -> Either String a
-runParser (BParser b) = b
 
 instance Applicative BParser where
   pure = return
@@ -65,25 +62,21 @@ dict name (BParser p) = BParser $ \b -> case b of
     _ -> Left $ "Not a dictionary: " ++ show b
 
 list :: BParser a -> BParser [a]
--- note that if the inner parser fails on a member of the list
--- we still yield the members that successfully parsed
 list (BParser p)
     = BParser $ \b -> case b of
-        BList bs -> return . rights $ map p bs
+        BList bs -> sequenceA $ map p bs
         _ -> Left $ "Not a list: " ++ show b
 
 optional :: BParser a -> BParser (Maybe a)
 optional p = liftM Just p <|> return Nothing
 
-bstring :: BParser String
-bstring = BParser $ \b -> case b of
-    BString str -> return $ L.unpack str
-    _ -> Left $ "Expected BString, found: " ++ show b
-
 bbytestring :: BParser L.ByteString
 bbytestring = BParser $ \b -> case b of
     BString str -> return str
     _ -> Left $ "Expected BString, found: " ++ show b
+
+bstring :: BParser String
+bstring = fmap L.unpack bbytestring
 
 bint :: BParser Integer
 bint = BParser $ \b -> case b of

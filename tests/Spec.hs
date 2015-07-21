@@ -112,6 +112,11 @@ main = hspec $ do
                     BDict $ Map.singleton "foo" (BString "bam")
                   ])
         `shouldBe` Right ["bar", "bam"]
+    it "fails to parse BLists of the wrong type" $ do
+        runParser (list bint) (BList [BString "foo", BString "bar"])
+            `shouldBe` Left "Expected BInt, found: BString \"foo\""
+        runParser (list bint) (BList [BInt 1, BString "bar"])
+            `shouldBe` Left "Expected BInt, found: BString \"bar\""
     it "parses BDicts of BLists" $
         runParser (dict "foo" $ list $ bstring)
                   (BDict $ Map.singleton "foo" (BList [
@@ -135,10 +140,16 @@ main = hspec $ do
                   (BDict $ Map.fromList [("bar", BInt 2)])
             `shouldBe` Right Nothing
     it "parses monadically" $ do
-        parse (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
+        parse1 (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
             `shouldBe` Right ("bar", 1)
+        parse2 (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
+            `shouldBe` Left "Expected BString, found: BInt 1"
           where 
-        parse = runParser $ do
+        parse1 = runParser $ do
             foo <- dict "foo" bstring
             baz <- dict "baz" bint
+            return (foo, baz)
+        parse2 = runParser $ do
+            foo <- dict "foo" bstring
+            baz <- dict "baz" bstring
             return (foo, baz)
