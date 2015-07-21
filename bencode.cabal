@@ -32,7 +32,7 @@ Library
   Default-Language:   Haskell2010
   Exposed-Modules:    Data.BEncode
                       Data.BEncode.Lexer
-                      Data.BEncode.Parser
+                      Data.BEncode.Reader
   Build-Depends:      base<5
                     , parsec
                     , bytestring
