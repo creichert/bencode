@@ -14,10 +14,7 @@ module Data.BEncode.Parser
     , runReader
     , dict
     , list
-    {-
     , optional
-    , (<|>)
-    -}
     , bstring
     , bbytestring
     , bint
@@ -48,10 +45,10 @@ list br = reader $ \b -> case b of
     BList bs -> return . rights $ map (runReader br) bs
     _ -> Left $ "Not a list: " ++ show b
 
-{-
 optional :: BReader a -> BReader (Maybe a)
-optional br = (fmap Just) br <|> return Nothing
--}
+optional br = reader $ \b -> case runReader br b of
+    Right result -> return $ Just result
+    _ -> return $ Nothing
 
 bstring :: BReader String
 bstring = reader $ \b -> case b of
