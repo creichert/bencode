@@ -32,8 +32,8 @@ import qualified Data.Map                   as Map
 newtype BParser a = BParser {runParser :: (BEncode -> Either String a)}
 
 instance Alternative BParser where
+    (<|>) = mplus
     empty = mzero
-    (<|>) a b = a `mplus` b
 
 instance MonadPlus BParser where
     mzero = fail "mzero"
@@ -52,7 +52,7 @@ instance Monad BParser where
     fail = BParser . const . Left
 
 instance Functor BParser where
-    fmap f p = return . f =<< p
+    fmap = liftM
 
 
 dict :: String -> BParser a -> BParser a
