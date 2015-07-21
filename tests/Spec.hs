@@ -115,7 +115,7 @@ main = hspec $ do
         `shouldBe` Right ["bar", "bam"]
     it "fails to parse BLists of the wrong type" $ do
         runParser (list bint) (BList [BString "foo", BString "bar"])
-#if MIN_VERSION_bytestring(0,10,4)
+#if MIN_VERSION_bytestring(0,10,0)
             `shouldBe` Left "Expected BInt, found: BString \"foo\""
 #else
             `shouldBe` Left "Expected BInt, found: BString (Chunk \"foo\" Empty)"
