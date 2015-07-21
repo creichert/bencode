@@ -43,8 +43,8 @@ instance MonadPlus BParser where
             ok         -> ok
 
 instance Applicative BParser where
-  pure = return
-  (<*>) = ap
+    pure = return
+    (<*>) = ap
 
 instance Monad BParser where
     BParser p >>= f = BParser $ \b -> p b >>= \res -> runParser (f res) b
