@@ -14,22 +14,21 @@ module Data.BEncode.Parser
     , runReader
     , dict
     , list
-    , optional
     , bstring
     , bbytestring
     , bint
+    , optional
+    , (<|>)
     ) where
 
 
-import           Control.Applicative        hiding (optional)
-import           Control.Monad
+import           Control.Applicative        (optional, (<|>))
 import           Control.Monad.Trans.Reader (Reader, reader, runReader)
 import           Data.BEncode
 import           Data.Either (rights)
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
 
---newtype BParser a = BParser (BEncode -> Either String a)
 type BReader a = Reader BEncode (Either String a)
 
 dict :: String -> BReader a -> BReader a
@@ -44,11 +43,6 @@ list :: BReader a -> BReader [a]
 list br = reader $ \b -> case b of
     BList bs -> return . rights $ map (runReader br) bs
     _ -> Left $ "Not a list: " ++ show b
-
-optional :: BReader a -> BReader (Maybe a)
-optional br = reader $ \b -> case runReader br b of
-    Right result -> return $ Just result
-    _ -> return $ Nothing
 
 bstring :: BReader String
 bstring = reader $ \b -> case b of
