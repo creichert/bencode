@@ -25,7 +25,7 @@ module Data.BEncode.Parser
 import           Control.Applicative        hiding (optional)
 import           Control.Monad
 import           Data.BEncode
-import           Data.Either (rights)
+import           Data.Traversable           (sequenceA)
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
 
@@ -66,7 +66,7 @@ list :: BParser a -> BParser [a]
 -- we still yield the members that successfully parsed
 list (BParser p)
     = BParser $ \b -> case b of
-        BList bs -> return . rights $ map p bs
+        BList bs -> sequenceA $ map p bs
         _ -> Left $ "Not a list: " ++ show b
 
 optional :: BParser a -> BParser (Maybe a)
