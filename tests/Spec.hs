@@ -121,7 +121,11 @@ main = hspec $ do
             `shouldBe` Left "Expected BInt, found: BString (Chunk \"foo\" Empty)"
 #endif
         runParser (list bint) (BList [BInt 1, BString "bar"])
+#if MIN_VERSION_bytestring(0,10,0)
             `shouldBe` Left "Expected BInt, found: BString \"bar\""
+#else
+            `shouldBe` Left "Expected BInt, found: BString (Chunk \"bar\" Empty)"
+#endif
     it "parses BDicts of BLists" $
         runParser (dict "foo" $ list $ bstring)
                   (BDict $ Map.singleton "foo" (BList [
