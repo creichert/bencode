@@ -72,15 +72,13 @@ list (BParser p)
 optional :: BParser a -> BParser (Maybe a)
 optional p = liftM Just p <|> return Nothing
 
-bstring :: BParser String
-bstring = BParser $ \b -> case b of
-    BString str -> return $ L.unpack str
-    _ -> Left $ "Expected BString, found: " ++ show b
-
 bbytestring :: BParser L.ByteString
 bbytestring = BParser $ \b -> case b of
     BString str -> return str
     _ -> Left $ "Expected BString, found: " ++ show b
+
+bstring :: BParser String
+bstring = fmap L.unpack bbytestring
 
 bint :: BParser Integer
 bint = BParser $ \b -> case b of
