@@ -12,7 +12,7 @@
 -----------------------------------------------------------------------------
 module Data.BEncode.Reader
     ( BReader
-    , runReader
+    , runBReader
     , dict
     , list
     , bstring

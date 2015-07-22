@@ -79,33 +79,33 @@ main = hspec $ do
 
   describe "Data.BEncode.Parser" $ do
     it "parses BInts" $
-        runReader bint (BInt 42) `shouldBe` Right 42
+        runBReader bint (BInt 42) `shouldBe` Right 42
     it "parses BStrings" $
-        runReader bstring (BString "foo") `shouldBe` Right "foo"
+        runBReader bstring (BString "foo") `shouldBe` Right "foo"
     it "parses BStrings with special characters in Haskell source" $
-        runReader bbytestring (BString "café") `shouldBe` Right "café"
+        runBReader bbytestring (BString "café") `shouldBe` Right "café"
     it "parses empty BLists" $
-        runReader (list bint) (BList []) `shouldBe` Right []
+        runBReader (list bint) (BList []) `shouldBe` Right []
     it "parses BLists of BInts" $
-        runReader (list bint) (BList [BInt 1, BInt 2])
+        runBReader (list bint) (BList [BInt 1, BInt 2])
         `shouldBe` Right [1, 2]
     it "parses BLists of BStrings" $
-        runReader (list bstring) (BList [BString "foo", BString "bar"])
+        runBReader (list bstring) (BList [BString "foo", BString "bar"])
         `shouldBe` Right ["foo", "bar"]
     it "parses BLists of BStrings into ByteStrings" $
-        runReader (list bbytestring) 
+        runBReader (list bbytestring) 
                   (BList [BString "foo", BString "bar"])
         `shouldBe` Right ["foo", "bar"]
     it "parses nested BLists" $
-        runReader (list $ list bbytestring)
+        runBReader (list $ list bbytestring)
                   (BList [BList [BString "foo", BString "bar"], BList []])
         `shouldBe` Right [["foo", "bar"], []]
     it "parses BDicts" $
-        runReader (dict "foo" bint)
+        runBReader (dict "foo" bint)
                   (BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)])
         `shouldBe` Right 1
     it "parses BLists of BDicts" $
-        runReader (list $ dict "foo" bstring)
+        runBReader (list $ dict "foo" bstring)
                   (BList [
                     BDict $ Map.fromList [("foo", BString "bar"),
                                           ("baz", BInt 2)],
@@ -113,32 +113,32 @@ main = hspec $ do
                   ])
         `shouldBe` Right ["bar", "bam"]
     it "parses BDicts of BLists" $
-        runReader (dict "foo" $ list $ bstring)
+        runBReader (dict "foo" $ list $ bstring)
                   (BDict $ Map.singleton "foo" (BList [
                     BString "foo", BString "bar"
                   ]))
         `shouldBe` Right ["foo", "bar"]
     it "parses optional BInts" $ do
-        runReader (optional bint) (BInt 1) 
+        runBReader (optional bint) (BInt 1) 
             `shouldBe` Right (Just 1)
-        runReader (optional bint) (BString "foo")
+        runBReader (optional bint) (BString "foo")
             `shouldBe` Right Nothing
     it "parses optional BStrings" $ do
-        runReader (optional bstring) (BInt 1) `shouldBe` Right Nothing
-        runReader (optional bstring) (BString "foo")
+        runBReader (optional bstring) (BInt 1) `shouldBe` Right Nothing
+        runBReader (optional bstring) (BString "foo")
             `shouldBe` Right (Just "foo")
     it "parses optional BDict keys" $ do
-        runReader (optional $ dict "foo" bint)
+        runBReader (optional $ dict "foo" bint)
                   (BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)])
             `shouldBe` Right (Just 1)
-        runReader (optional $ dict "foo" bint)
+        runBReader (optional $ dict "foo" bint)
                   (BDict $ Map.fromList [("bar", BInt 2)])
             `shouldBe` Right Nothing
     it "parses monadically" $ do
         parse (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
             `shouldBe` Right ("bar", 1)
           where 
-        parse = runReader $ do
+        parse = runBReader $ do
             foo <- dict "foo" bstring
             baz <- dict "baz" bint
             return (foo, baz)
