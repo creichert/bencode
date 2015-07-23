@@ -33,6 +33,7 @@ Library
   Exposed-Modules:    Data.BEncode
                       Data.BEncode.Lexer
                       Data.BEncode.Reader
+                      Data.BEncode.Parser
   Build-Depends:      base<5
                     , parsec
                     , bytestring
