@@ -23,9 +23,8 @@ module Data.BEncode.Reader
     ) where
 
 import           Control.Applicative        (Applicative, Alternative, (<|>))
-import           Control.Monad              (MonadPlus)
-import           Control.Monad.Trans.Reader (Reader, reader, runReader)
-import           Control.Monad.Trans.Error  (ErrorT(..), runErrorT)
+import           Control.Monad.Reader
+import           Control.Monad.Error
 import           Data.Traversable           (sequenceA)
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
@@ -33,7 +32,8 @@ import qualified Data.Map                   as Map
 import           Data.BEncode
 
 newtype BReader a = BReader (ErrorT String (Reader BEncode) a)
-    deriving (Functor, Applicative, Alternative, Monad, MonadPlus)
+    deriving (Functor, Applicative, Alternative, Monad, MonadPlus,
+              MonadReader BEncode, MonadError String)
 
 breader :: (BEncode -> (Either String a)) -> BReader a
 breader = BReader . ErrorT . reader
