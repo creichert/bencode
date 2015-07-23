@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Data.BEncode.Reader
--- Copyright   :  (c) 2005 Lemmih <lemmih@gmail.com>
+-- Copyright   :  (c) 2015 Matthew Leon <ml@matthewleon.com>
 -- License     :  BSD3
 -- Maintainer  :  lemmih@gmail.com
 -- Stability   :  stable
