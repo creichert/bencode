@@ -19,10 +19,9 @@ module Data.BEncode.Reader
     , bbytestring
     , bint
     , optional
-    , (<|>)
     ) where
 
-import           Control.Applicative        (Applicative, Alternative, (<|>))
+import           Control.Applicative        (Applicative, Alternative)
 import           Control.Monad.Reader
 import           Control.Monad.Error
 import           Data.Traversable           (sequenceA)
