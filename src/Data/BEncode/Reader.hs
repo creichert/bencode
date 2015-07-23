@@ -5,7 +5,7 @@
 -- Copyright   :  (c) 2015 Matthew Leon <ml@matthewleon.com>
 -- License     :  BSD3
 -- Maintainer  :  lemmih@gmail.com
--- Stability   :  stable
+-- Stability   :  experimental
 -- Portability :  portable
 --
 -- A reader monad for BEncoded data
