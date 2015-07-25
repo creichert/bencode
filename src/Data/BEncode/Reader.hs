@@ -66,10 +66,8 @@ bbytestring :: BReader L.ByteString
 bbytestring = breader $ \b -> case b of
     BString str -> return str
     _ -> Left $ "Expected BString, found: " ++ show b
--- ^
--- >>> :set -XOverloadedStrings
--- >>> runBReader bbytestring (BString "foo")
--- Right "foo"
+-- ^ Usage same as bstring, below.
+-- (sadly, doctests for this cause errors on GHC 7.4)
 
 bstring :: BReader String
 bstring = fmap L.unpack bbytestring
@@ -118,7 +116,7 @@ list br = breader $ \b -> case b of
 -- Right []
 --
 -- >>> let bs = (BList [BList [BString "foo", BString "bar"], BList []])
--- >>> runBReader (list $ list bbytestring) bs
+-- >>> runBReader (list $ list string) bs
 -- Right [["foo","bar"],[]]
 
 dict :: String -> BReader a -> BReader a
