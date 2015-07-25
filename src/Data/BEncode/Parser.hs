@@ -9,7 +9,8 @@
 --
 -- A parsec style parser for BEncoded data
 -----------------------------------------------------------------------------
-module Data.BEncode.Parser {-# DEPRECATED "Use Data.BEncode.Reader instead" #-}
+module Data.BEncode.Parser {-#
+    DEPRECATED "Use \"Data.BEncode.Reader\" instead" #-}
     ( BParser
     , runParser
     , token
