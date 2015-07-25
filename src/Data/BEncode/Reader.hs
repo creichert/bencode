@@ -116,7 +116,7 @@ list br = breader $ \b -> case b of
 -- Right []
 --
 -- >>> let bs = (BList [BList [BString "foo", BString "bar"], BList []])
--- >>> runBReader (list $ list string) bs
+-- >>> runBReader (list $ list bstring) bs
 -- Right [["foo","bar"],[]]
 
 dict :: String -> BReader a -> BReader a
