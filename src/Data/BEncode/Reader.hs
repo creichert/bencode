@@ -28,7 +28,7 @@
 -- Right ("bar",1,Nothing)
 -----------------------------------------------------------------------------
 module Data.BEncode.Reader (
-    -- * Monad
+    -- * Reader Monad
     BReader, runBReader,
     -- * Combinators
     bint, bbytestring, bstring, optional, list, dict
