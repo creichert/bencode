@@ -15,14 +15,14 @@
 --
 -- Usage example:
 --
--- >>> :set -XOverloadedStrings
--- >>> :{
--- let bd = (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
---     bReader = do
---     foo <- dict "foo" bstring
---     baz <- dict "baz" bint
---     shouldBeNothing <- optional $ dict "optionalKey" bint
---     return (foo, baz, shouldBeNothing)
+>>> :set -XOverloadedStrings
+>>> let bd = (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
+>>> :{
+-- let bReader = do
+--       foo <- dict "foo" bstring
+--       baz <- dict "baz" bint
+--       shouldBeNothing <- optional $ dict "optionalKey" bint
+--       return (foo, baz, shouldBeNothing)
 -- in runBReader bReader bd
 -- :}
 -- Right ("bar",1,Nothing)
