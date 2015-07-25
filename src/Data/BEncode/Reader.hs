@@ -38,7 +38,6 @@ module Data.BEncode.Reader (
 import           Control.Applicative        (Applicative, Alternative)
 import           Control.Monad.Reader
 import           Control.Monad.Error
-import           Data.Traversable           (sequenceA)
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
 
@@ -108,7 +107,7 @@ optional br = breader $ \b -> case runBReader br b of
 
 list :: BReader a -> BReader [a]
 list br = breader $ \b -> case b of
-    BList bs -> sequenceA $ map (runBReader br) bs
+    BList bs -> mapM (runBReader br) bs
     _ -> Left $ "Not a list: " ++ show b
 -- ^ Read a list of BEncoded data
 --
