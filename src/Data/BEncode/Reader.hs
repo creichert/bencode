@@ -44,6 +44,9 @@ import qualified Data.Map                   as Map
 
 import           Data.BEncode
 
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
 newtype BReader a = BReader (ErrorT String (Reader BEncode) a)
     deriving (Functor, Applicative, Alternative, Monad, MonadPlus,
               MonadReader BEncode, MonadError String)
@@ -57,6 +60,7 @@ runBReader :: BReader a -> BEncode -> Either String a
 runBReader (BReader br) = runReader $ runErrorT br
 -- ^Run a BReader. See usage examples elsewhere in this file.
 
+-----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
 bbytestring :: BReader L.ByteString
