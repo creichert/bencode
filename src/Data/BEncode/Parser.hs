@@ -67,20 +67,6 @@ instance Functor BParser where
     fmap = liftM
 
 
-dict :: String -> BParser a -> BParser a
-dict name (BParser p) = BParser $ \b -> case b of
-    BDict bmap | (Just code) <- Map.lookup name bmap -> p code
-    BDict _ -> Left $ "Name not found in dictionary: " ++ name
-    _ -> Left $ "Not a dictionary: " ++ show b
-
-list :: BParser a -> BParser [a]
-list (BParser p)
-    = BParser $ \b -> case b of
-        BList bs -> sequenceA $ map p bs
-        _ -> Left $ "Not a list: " ++ show b
-    fmap fn p = do a <- p
-                   return (fn a)
-
 runParser :: BParser a -> BEncode -> Either String a
 runParser parser b = case runB parser b of
                        Ok a _ -> Right a
