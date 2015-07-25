@@ -32,12 +32,23 @@ Library
   Default-Language:   Haskell2010
   Exposed-Modules:    Data.BEncode
                       Data.BEncode.Lexer
+                      Data.BEncode.Reader
                       Data.BEncode.Parser
   Build-Depends:      base<5
                     , parsec
                     , bytestring
                     , containers
                     , binary
+                    , mtl
+
+test-suite doctests
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: tests
+  main-is:        doctests.hs
+  Default-Language:   Haskell2010
+  build-depends:  base == 4.*
+                , doctest >= 0.8
+                , bencode
 
 test-suite spec
   ghc-options:    -Wall
