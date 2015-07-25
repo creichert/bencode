@@ -15,9 +15,9 @@
 --
 -- Usage example:
 --
->>> :set -XOverloadedStrings
->>> let bd = (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
->>> :{
+-- >>> :set -XOverloadedStrings
+-- >>> let bd = (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
+-- >>> :{
 -- let bReader = do
 --       foo <- dict "foo" bstring
 --       baz <- dict "baz" bint
