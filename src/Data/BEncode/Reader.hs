@@ -27,6 +27,7 @@
 -- :}
 -- Right ("bar",1,Nothing)
 -----------------------------------------------------------------------------
+
 module Data.BEncode.Reader (
     -- * Reader Monad
     BReader, runBReader,
@@ -55,6 +56,8 @@ breader = BReader . ErrorT . reader
 runBReader :: BReader a -> BEncode -> Either String a
 runBReader (BReader br) = runReader $ runErrorT br
 -- ^Run a BReader. See usage examples elsewhere in this file.
+
+-----------------------------------------------------------------------------
 
 bbytestring :: BReader L.ByteString
 bbytestring = breader $ \b -> case b of
