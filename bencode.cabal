@@ -39,7 +39,6 @@ Library
                     , bytestring
                     , containers
                     , binary
-                    , mtl
                     , transformers
                     , transformers-compat >= 0.4
 

@@ -36,7 +36,8 @@ module Data.BEncode.Reader (
     ) where
 
 import           Control.Applicative        (Applicative, Alternative)
-import           Control.Monad.Reader
+import           Control.Monad              (MonadPlus)
+import           Control.Monad.Trans.Reader
 import           Control.Monad.Trans.Except
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
@@ -47,8 +48,7 @@ import           Data.BEncode
 -----------------------------------------------------------------------------
 
 newtype BReader a = BReader (ExceptT String (Reader BEncode) a)
-    deriving (Functor, Applicative, Alternative, Monad, MonadPlus,
-              MonadReader BEncode)
+    deriving (Functor, Applicative, Alternative, Monad, MonadPlus)
 -- ^Reader monad for extracting data from a BEncoded structure.
 
 breader :: (BEncode -> (Either String a)) -> BReader a
