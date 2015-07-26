@@ -35,7 +35,7 @@ module Data.BEncode.Reader (
     bint, bbytestring, bstring, optional, list, dict
     ) where
 
-import           Control.Applicative        (Applicative, Alternative)
+import           Control.Applicative hiding (optional)
 import           Control.Monad              (MonadPlus)
 import           Control.Monad.Trans.Reader
 import           Control.Monad.Trans.Except
