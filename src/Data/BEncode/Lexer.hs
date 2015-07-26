@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 -- |
--- Module      :  BEncode.Lexer
+-- Module      :  Data.BEncode.Lexer
 -- Copyright   :  (c) 2005 Jesper Louis Andersen <jlouis@mongers.org>
 --                    2006 Lemmih <lemmih@gmail.com>
 -- License     :  BSD3

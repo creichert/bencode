@@ -7,17 +7,20 @@
 -- Stability   :  stable
 -- Portability :  portable
 --
--- Parser combinators for BEncoded data
+-- A parsec style parser for BEncoded data
 -----------------------------------------------------------------------------
-module Data.BEncode.Parser
+module Data.BEncode.Parser {-#
+    DEPRECATED "Use \"Data.BEncode.Reader\" instead" #-}
     ( BParser
     , runParser
+    , token
     , dict
     , list
     , optional
     , bstring
     , bbytestring
     , bint
+    , setInput
     , (<|>)
     ) where
 
@@ -25,60 +28,90 @@ module Data.BEncode.Parser
 import           Control.Applicative        hiding (optional)
 import           Control.Monad
 import           Data.BEncode
-import           Data.Traversable           (sequenceA)
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
 
-newtype BParser a = BParser {runParser :: (BEncode -> Either String a)}
+data BParser a
+    = BParser (BEncode -> Reply a)
 
 instance Alternative BParser where
+    (<|>) = mplus
     empty = mzero
-    (<|>) a b = a `mplus` b
 
 instance MonadPlus BParser where
-    mzero = fail "mzero"
-    mplus (BParser a) (BParser b) = BParser $ \st ->
-        case a st of
-            Left _err -> b st
-            ok         -> ok
+    mzero = BParser $ \_ -> Error "mzero"
+    mplus (BParser a) (BParser b) = BParser $ \st -> case a st of
+                                                       Error _err -> b st
+                                                       ok         -> ok
+
+
+runB :: BParser a -> BEncode -> Reply a
+runB (BParser b) = b
+
+data Reply a
+    = Ok a BEncode
+    | Error String
 
 instance Applicative BParser where
-  pure = return
-  (<*>) = ap
+    pure = return
+    (<*>) = ap
 
 instance Monad BParser where
-    BParser p >>= f = BParser $ \b -> p b >>= \res -> runParser (f res) b
-    return = BParser . const . return
-    fail = BParser . const . Left
+    (BParser p) >>= f = BParser $ \b -> case p b of
+                                          Ok a b' -> runB (f a) b'
+                                          Error str -> Error str
+    return val = BParser $ Ok val
+    fail str = BParser $ \_ -> Error str
 
 instance Functor BParser where
-    fmap f p = return . f =<< p
+    fmap = liftM
 
 
-dict :: String -> BParser a -> BParser a
-dict name (BParser p) = BParser $ \b -> case b of
-    BDict bmap | (Just code) <- Map.lookup name bmap -> p code
-    BDict _ -> Left $ "Name not found in dictionary: " ++ name
-    _ -> Left $ "Not a dictionary: " ++ show b
+runParser :: BParser a -> BEncode -> Either String a
+runParser parser b = case runB parser b of
+                       Ok a _ -> Right a
+                       Error str -> Left str
 
-list :: BParser a -> BParser [a]
-list (BParser p)
-    = BParser $ \b -> case b of
-        BList bs -> sequenceA $ map p bs
-        _ -> Left $ "Not a list: " ++ show b
+token :: BParser BEncode
+token = BParser $ \b -> Ok b b
+
+dict :: String -> BParser BEncode
+dict name = BParser $ \b -> case b of
+                              BDict bmap | Just code <- Map.lookup name bmap
+                                   -> Ok code b
+                              BDict _ -> Error $ "Name not found in dictionary: " ++ name
+                              _ -> Error $ "Not a dictionary: " ++ name
+
+list :: String -> BParser a -> BParser [a]
+list name p
+    = dict name >>= \lst ->
+      BParser $ \b -> case lst of
+                      BList bs -> foldr (cat . runB p) (Ok [] b) bs
+                      _ -> Error $ "Not a list: " ++ name
+    where cat (Ok v _) (Ok vs b) = Ok (v:vs) b
+          cat (Ok _ _) (Error str) = Error str
+          cat (Error str) _ = Error str
 
 optional :: BParser a -> BParser (Maybe a)
 optional p = liftM Just p <|> return Nothing
 
-bbytestring :: BParser L.ByteString
-bbytestring = BParser $ \b -> case b of
-    BString str -> return str
-    _ -> Left $ "Expected BString, found: " ++ show b
+bstring :: BParser BEncode -> BParser String
+bstring p = do b <- p
+               case b of
+                 BString str -> return (L.unpack str)
+                 _ -> fail $ "Expected BString, found: " ++ show b
 
-bstring :: BParser String
-bstring = fmap L.unpack bbytestring
+bbytestring :: BParser BEncode -> BParser L.ByteString
+bbytestring p = do b <- p
+                   case b of
+                     BString str -> return str
+                     _ -> fail $ "Expected BString, found: " ++ show b
 
-bint :: BParser Integer
-bint = BParser $ \b -> case b of
-    BInt int -> return int
-    _ -> Left $ "Expected BInt, found: " ++ show b
+bint :: BParser BEncode -> BParser Integer
+bint p = do b <- p
+            case b of
+              BInt int -> return int
+              _ -> fail $ "Expected BInt, found: " ++ show b
+
+setInput :: BEncode -> BParser ()
+setInput b = BParser $ \_ -> Ok () b
