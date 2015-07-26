@@ -40,6 +40,7 @@ Library
                     , containers
                     , binary
                     , transformers
+                    -- needed to support transformers 0.3.0.0
                     , transformers-compat >= 0.4
 
 test-suite doctests
