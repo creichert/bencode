@@ -35,7 +35,7 @@ module Data.BEncode.Reader (
     bint, bbytestring, bstring, optional, list, dict
     ) where
 
-import           Control.Applicative hiding (optional)
+import           Control.Applicative
 import           Control.Monad              (MonadPlus)
 import           Control.Monad.Trans.Reader
 import           Control.Monad.Trans.Except
@@ -84,24 +84,6 @@ bint = breader $ \b -> case b of
 -- >>> runBReader bint (BInt 42)
 -- Right 42
 --
-
-optional :: BReader a -> BReader (Maybe a)
-optional br = breader $ \b -> case runBReader br b of
-    Right x -> Right $ Just x
-    _ -> Right Nothing
--- ^ Wrap a BReader's result in a Maybe and never fail.
---
--- >>> runBReader (optional bint) (BInt 1) 
--- Right (Just 1)
---
--- >>> runBReader (optional bint) (BString "foo")
--- Right Nothing
---
--- >>> runBReader (optional bstring) (BInt 1)
--- Right Nothing
---
--- >>> runBReader (optional bstring) (BString "foo")
--- Right (Just "foo")
 
 list :: BReader a -> BReader [a]
 list br = breader $ \b -> case b of
