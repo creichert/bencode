@@ -16,11 +16,11 @@
 -- Usage example:
 --
 -- >>> :set -XOverloadedStrings
--- >>> let bd = (BDict $ Map.fromList [("foo", BString "bar"), ("baz", BInt 1)])
+-- >>> let bd = (BDict $ Map.fromList [("baz", BInt 1), ("foo", BString "bar")])
 -- >>> :{
 -- let bReader = do
---       foo <- dict "foo" bstring
 --       baz <- dict "baz" bint
+--       foo <- dict "foo" bstring
 --       shouldBeNothing <- optional $ dict "optionalKey" bint
 --       return (foo, baz, shouldBeNothing)
 -- in runBReader bReader bd
@@ -108,14 +108,14 @@ dict name br = breader $ \b -> case b of
     _ -> Left $ "Not a dictionary: " ++ show b
 -- ^ Read the values of a BDict corresponding to a string key
 --
--- >>> let bd = (BDict $ Map.fromList [("foo", BInt 1), ("bar", BInt 2)])
+-- >>> let bd = (BDict $ Map.fromList [("bar", BInt 2), ("foo", BInt 1)])
 -- >>> runBReader (dict "foo" bint) bd
 -- Right 1
 --
 --
 -- >>> :{
--- let bs = (BList [BDict $ Map.fromList [("foo", BString "bar"),
---                                       ("baz", BInt 2)],
+-- let bs = (BList [BDict $ Map.fromList [("baz", BInt 2),
+--                                        ("foo", BString "bar")],
 --                  BDict $ Map.singleton "foo" (BString "bam")])
 -- in runBReader (list $ dict "foo" bstring) bs
 -- :}
