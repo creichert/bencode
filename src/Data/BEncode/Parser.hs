@@ -61,6 +61,8 @@ instance Monad BParser where
                                           Ok a b' -> runB (f a) b'
                                           Error str -> Error str
     return val = BParser $ Ok val
+
+instance MonadFail BParser where
     fail str = BParser $ \_ -> Error str
 
 instance Functor BParser where
