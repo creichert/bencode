@@ -35,6 +35,7 @@ Library
                       Data.BEncode.Reader
                       Data.BEncode.Parser
   Build-Depends:      base<5
+                    , fail
                     , parsec
                     , bytestring
                     , containers
