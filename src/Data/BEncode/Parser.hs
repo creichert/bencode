@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  BParser
@@ -27,6 +28,7 @@ module Data.BEncode.Parser {-#
 
 import           Control.Applicative        hiding (optional)
 import           Control.Monad
+import qualified Control.Monad.Fail         as Fail
 import           Data.BEncode
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
@@ -61,6 +63,9 @@ instance Monad BParser where
                                           Ok a b' -> runB (f a) b'
                                           Error str -> Error str
     return val = BParser $ Ok val
+#if MIN_VERSION_base(4,13,0)
+instance Fail.MonadFail BParser where
+#endif
     fail str = BParser $ \_ -> Error str
 
 instance Functor BParser where
