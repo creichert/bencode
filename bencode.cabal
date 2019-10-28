@@ -51,6 +51,8 @@ test-suite doctests
   build-depends:  base == 4.*
                 , doctest >= 0.8
                 , bencode
+  if !impl(ghc >= 8.0)
+    build-depends: fail >= 4.9.0.0 && < 4.10
 
 test-suite spec
   ghc-options:    -Wall
