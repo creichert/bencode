@@ -50,9 +50,8 @@ main = hspec $ do
         bRead "de" `shouldBe` Just (BDict Map.empty)
 
   describe "Data.BEncode decoding" $ do
-    -- TODO failing
-    -- it "is the inverse of encoding" $ property $ \bencode ->
-    --     (bRead . bPack) bencode == Just bencode
+    it "is the inverse of encoding" $ property $ \bencode ->
+        (bRead . bPack) bencode == Just bencode
     it "decodes int" $
         bPack (BInt 42) `shouldBe` "i42e"
     it "decodes null int" $
@@ -70,10 +69,9 @@ main = hspec $ do
     it "decodes hash" $ do
         let d = Map.fromList [("foo", BString "bar"), ("baz",BString "qux")]
         bPack (BDict d) `shouldBe` "d3:baz3:qux3:foo3:bare"
-    -- FIX
-    -- it "decodes unicode" $ do
-    --   bPack (BString "café") `shouldBe` "5:café"
-    --   bPack (BList [BString "你好", BString "中文"]) `shouldBe` "l6:你好6:中文e"
+    it "decodes unicode" $ do
+        bPack (BString "café") `shouldBe` "5:café"
+        bPack (BList [BString "你好", BString "中文"]) `shouldBe` "l6:你好6:中文e"
     it "decodes lists of lists" $
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
             `shouldBe` Just (BList [ BString "hello", BInt 42, bll])
