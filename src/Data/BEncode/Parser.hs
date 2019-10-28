@@ -28,10 +28,13 @@ module Data.BEncode.Parser {-#
 
 import           Control.Applicative        hiding (optional)
 import           Control.Monad
-import qualified Control.Monad.Fail         as Fail
 import           Data.BEncode
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.Map                   as Map
+
+#if MIN_VERSION_base(4,13,0)
+import qualified Control.Monad.Fail as Fail
+#endif
 
 data BParser a
     = BParser (BEncode -> Reply a)
