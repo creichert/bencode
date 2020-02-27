@@ -1,58 +1,47 @@
-Name:            bencode
-Version:         0.6.0.0
-Maintainer:      Christopher Reichert <creichert07@gmail.com>
-Author:          Lemmih (lemmih@gmail.com), Jesper Louis Andersen
-Copyright:       (c) 2005-2009, David Himmelstrup,
-                     2006 Lemmih <lemmih@gmail.com>,
-                     2005 Jesper Louis Andersen <jlouis@mongers.org>
-License-File:    LICENSE
-License:         BSD3
-Build-Type:      Simple
-Category:        Text
-Tested-With:     GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2,
-                 GHC == 8.2.2, GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.2
-Cabal-Version:   >= 1.10
-Synopsis:        Parser and printer for bencoded data.
-Description:
-  Parser and printer for bencoded data.
-  .
-  Bencode (pronounced like B encode) is the encoding used by the
-  peer-to-peer file sharing system BitTorrent for storing and
-  transmitting loosely structured data.
+name:          bencode
+version:       0.6.0.0
+synopsis:      Parsers and printers for bencoded data.
+description:   Parsers and printers for bencoded data. Bencode (pronounced like B encode)
+               is the encoding used by the peer-to-peer file sharing system BitTorrent for
+               storing and transmitting loosely structured data.
+license:       BSD3
+license-file:  LICENSE
+copyright:     (c) 2005-2009, David Himmelstrup,
+               (c) 2006 Lemmih <lemmih@gmail.com>,
+               (c) 2005 Jesper Louis Andersen <jlouis@mongers.org>
+author:        Lemmih <lemmih@gmail.com>,
+               Jesper Louis Andersen <jlouis@mongers.org>,
+               Christopher Reichert <creichert07@gmail.com>
+maintainer:    Peter Simons <simons@cryp.to>
+tested-with:   GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2,
+               GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.2
+category:      Text
+build-type:    Simple
+cabal-version: >= 1.10
 
-
-Source-Repository head
+source-repository head
   type:     git
   location: https://github.com/creichert/bencode
 
-
-Library
-  GHC-Options:        -Wall
-  Default-Extensions: PatternGuards
-  Hs-Source-Dirs:     src
-  Default-Language:   Haskell2010
-  Exposed-Modules:    Data.BEncode
+library
+  exposed-modules:    Data.BEncode
                       Data.BEncode.Lexer
-                      Data.BEncode.Reader
                       Data.BEncode.Parser
-  Build-Depends:      base<5
-                    , parsec
+                      Data.BEncode.Reader
+  hs-source-dirs:     src
+  build-depends:      base                == 4.*
+                    , binary
                     , bytestring
                     , containers
-                    , binary
+                    , parsec
                     , transformers
-                    -- needed to support transformers 0.3.0.0
                     , transformers-compat >= 0.4
+  default-language:   Haskell2010
+  default-extensions: PatternGuards
 
 test-suite spec
-  ghc-options:    -Wall
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: tests
-  main-is:        Spec.hs
-  Default-Language:   Haskell2010
-  build-depends:  base == 4.*
-                , bytestring
-                , containers
-                , hspec
-                , QuickCheck
-                , bencode
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   tests
+  build-depends:    base, QuickCheck, bencode, bytestring, containers, hspec
+  default-language: Haskell2010
