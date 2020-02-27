@@ -1,5 +1,5 @@
 name:          bencode
-version:       0.6.0.0
+version:       0.6.1.0
 synopsis:      Parsers and printers for bencoded data.
 description:   Parsers and printers for bencoded data. Bencode (pronounced like B encode)
                is the encoding used by the peer-to-peer file sharing system BitTorrent for
