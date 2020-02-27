@@ -44,17 +44,6 @@ Library
                     -- needed to support transformers 0.3.0.0
                     , transformers-compat >= 0.4
 
-test-suite doctests
-  type:           exitcode-stdio-1.0
-  hs-source-dirs: tests
-  main-is:        doctests.hs
-  Default-Language:   Haskell2010
-  build-depends:  base == 4.*
-                , doctest >= 0.8
-                , bencode
-  if !impl(ghc >= 8.0)
-    build-depends: fail >= 4.9.0.0 && < 4.10
-
 test-suite spec
   ghc-options:    -Wall
   type:           exitcode-stdio-1.0
