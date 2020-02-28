@@ -1,5 +1,8 @@
 #!/usr/bin/env runhaskell
-> module Main where
+
+> module Main (main) where
+>
 > import Distribution.Simple
+>
 > main :: IO ()
-> main = defaultMainWithHooks defaultUserHooks
+> main = defaultMain
