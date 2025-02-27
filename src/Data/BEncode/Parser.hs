@@ -58,14 +58,16 @@ data Reply a
     | Error String
 
 instance Applicative BParser where
-    pure = return
+    pure val = BParser $ Ok val
     (<*>) = ap
 
 instance Monad BParser where
     (BParser p) >>= f = BParser $ \b -> case p b of
                                           Ok a b' -> runB (f a) b'
                                           Error str -> Error str
-    return val = BParser $ Ok val
+#if !MIN_VERSION_base(4,8,0)
+    return = pure
+#endif
 #if MIN_VERSION_base(4,13,0)
 instance Fail.MonadFail BParser where
 #endif
