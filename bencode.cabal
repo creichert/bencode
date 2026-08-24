@@ -13,8 +13,11 @@ author:             Lemmih <lemmih@gmail.com>,
                     Jesper Louis Andersen <jlouis@mongers.org>,
                     Christopher Reichert <creichert07@gmail.com>
 maintainer:         Peter Simons <simons@cryp.to>
-tested-with:        GHC == 7.6.3, GHC == 7.8.4, GHC == 7.10.3, GHC == 8.0.2, GHC == 8.2.2,
-                    GHC == 8.4.4, GHC == 8.6.5, GHC == 8.8.2
+tested-with:        GHC == 8.0.2 || == 8.2.2 || == 8.4.4 || == 8.6.5
+                    || == 8.8.4 || == 9.0.2 || == 9.2.8 || == 9.4.8
+                    || == 9.6.7 || == 9.8.4 || == 9.10.3 || == 9.12.4
+                    || == 9.14.1
+
 category:           Text
 build-type:         Simple
 extra-source-files: README.md
