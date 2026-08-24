@@ -38,8 +38,7 @@ library
                     , bytestring
                     , containers
                     , parsec
-                    , transformers
-                    , transformers-compat >= 0.4
+                    , transformers        >= 0.4
   default-language:   Haskell2010
   default-extensions: PatternGuards
 
