@@ -10,6 +10,9 @@ import Test.QuickCheck
 import Data.BEncode
 import Data.ByteString.Lazy (pack)
 
+import qualified Data.ByteString.Lazy as LBS (fromStrict)
+import qualified Data.Text.Encoding as TE (encodeUtf8)
+
 instance Arbitrary BEncode where arbitrary = sized bencode'
 
 bencode' :: Int -> Gen BEncode
@@ -70,10 +73,15 @@ main = hspec $ do
     it "decodes hash" $ do
         let d = Map.fromList [("foo", BString "bar"), ("baz",BString "qux")]
         bPack (BDict d) `shouldBe` "d3:baz3:qux3:foo3:bare"
-    -- FIX
-    -- it "decodes unicode" $ do
-    --   bPack (BString "café") `shouldBe` "5:café"
-    --   bPack (BList [BString "你好", BString "中文"]) `shouldBe` "l6:你好6:中文e"
+    it "decodes unicode" $ do
+        -- Unicode code points.
+        bPack (BString ("café")) `shouldBe` "4:caf\xe9"
+        -- Multi-byte code points get truncated when packed to ByteString.
+        bPack (BList [BString ("你好"), BString ("中文")]) `shouldBe` "l2:\x60\x7d\&2:\x2d\x87\&e"
+
+        let encode = LBS.fromStrict . TE.encodeUtf8
+        bPack (BString (encode "café")) `shouldBe` encode "5:café"
+        bPack (BList [BString (encode "你好"), BString (encode "中文")]) `shouldBe` "l6:\xe4\xbd\xa0\xe5\xa5\xbd\&6:\xe4\xb8\xad\xe6\x96\x87\&e"
     it "decodes lists of lists" $
         bRead "l5:helloi42eli-1ei0ei1ei2ei3e4:fouree"
             `shouldBe` Just (BList [ BString "hello", BInt 42, bll])
