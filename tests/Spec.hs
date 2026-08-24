@@ -9,8 +9,10 @@ import Test.QuickCheck
 
 import Data.BEncode
 import Data.ByteString.Lazy (pack)
+import Control.Arrow (first)
 
 import qualified Data.ByteString.Lazy as LBS (fromStrict)
+import qualified Data.ByteString.Lazy.Char8 as CLBS
 import qualified Data.Text.Encoding as TE (encodeUtf8)
 
 instance Arbitrary BEncode where arbitrary = sized bencode'
@@ -21,7 +23,7 @@ bencode' n = oneof [
         BInt `fmap` arbitrary,
         (BString . pack) `fmap` arbitrary :: Gen BEncode,
         BList `fmap` (resize (n `div` 2) arbitrary),
-        (BDict . Map.fromList) `fmap` (resize (n `div` 2) arbitrary)
+        (BDict . Map.fromList . map (first (CLBS.unpack . pack))) `fmap` (resize (n `div` 2) arbitrary)
     ]
 
 main :: IO ()
@@ -53,9 +55,8 @@ main = hspec $ do
         bRead "de" `shouldBe` Just (BDict Map.empty)
 
   describe "Data.BEncode decoding" $ do
-    -- TODO failing
-    -- it "is the inverse of encoding" $ property $ \bencode ->
-    --     (bRead . bPack) bencode == Just bencode
+    it "is the inverse of encoding" $ property $ \bencode ->
+        (bRead . bPack) bencode == Just bencode
     it "decodes int" $
         bPack (BInt 42) `shouldBe` "i42e"
     it "decodes null int" $
