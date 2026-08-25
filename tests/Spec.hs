@@ -54,6 +54,13 @@ main = hspec $ do
     it "encodes empty dictionaries" $
         bRead "de" `shouldBe` Just (BDict Map.empty)
 
+    it "rejects non-canonical integers" $ do
+        bRead "i03e" `shouldBe` Nothing
+        bRead "i-0e" `shouldBe` Nothing
+        bRead "i-03e" `shouldBe` Nothing
+        bRead "i-e" `shouldBe` Nothing
+        bRead "ie" `shouldBe` Nothing
+
   describe "Data.BEncode decoding" $ do
     it "is the inverse of encoding" $ property $ \bencode ->
         (bRead . bPack) bencode == Just bencode

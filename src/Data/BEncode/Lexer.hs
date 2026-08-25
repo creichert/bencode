@@ -24,6 +24,10 @@ data Token
       deriving (Show,Eq)
 
 
+isCanonicalDigits :: L.ByteString -> Bool
+isCanonicalDigits digits =
+    not (L.null digits) && (digits == L.singleton '0' || L.head digits /= '0')
+
 lexer :: L.ByteString -> [Token]
 lexer fs | L.null fs = []
 lexer fs
@@ -33,17 +37,22 @@ lexer fs
         'i' -> TInt  : lexer rest
         'e' -> TEnd  : lexer rest
         '-' -> let (digits,rest') = L.span isDigit rest
-                   number = read (L.unpack digits)
-               in TNumber (-number) : lexer rest'
+               in 
+                  -- "-0" is not canonical bencode, so bare "0" is rejected here
+                  if digits /= L.singleton '0' && isCanonicalDigits digits
+                     then TNumber (negate (read (L.unpack digits))) : lexer rest'
+                     else []
         _ | isDigit ch
               -> let (digits,rest') = L.span isDigit fs
-                     number = read (L.unpack digits)
-                 in if L.null rest'
-                       then [TNumber number]
-                       else case L.head rest' of
-                              ':' -> let (str, rest'') = L.splitAt (fromIntegral number) (L.tail rest')
-                                     in TString str : lexer rest''
-                              _ -> TNumber number : lexer rest'
+                 in if isCanonicalDigits digits
+                       then let number = read (L.unpack digits)
+                            in if L.null rest'
+                                  then [TNumber number]
+                                  else case L.head rest' of
+                                         ':' -> let (str, rest'') = L.splitAt (fromIntegral number) (L.tail rest')
+                                                in TString str : lexer rest''
+                                         _ -> TNumber number : lexer rest'
+                       else []
           | otherwise -> error "Lexer error."
     where ch = L.head fs
           rest = L.tail fs
